@@ -1,0 +1,280 @@
+<?php
+header("Access-Control-Allow-Origin: *");
+?>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!-- Favicon icon -->
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
+    <title>Practice</title>
+	   <link rel="stylesheet" href="css/lib/html5-editor/bootstrap-wysihtml5.css" />
+    <!-- Bootstrap Core CSS -->
+    <link href="lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:** -->
+    <!--[ifT lt IE 9]>
+    <script src="https:**oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https:**oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+<![endif]-->
+</head>
+
+<body class="fix-header fix-sidebar mini-sidebar">
+    
+    <!-- Main wrapper  -->
+    <div class="container">
+    	<div class="row">
+    	   <div class="col-lg-12">
+    	     <form id="form1" enctype="multipart/form-data">
+               <div class="form-group">
+               	<p class="form-control-plaintext">Today's date</p>
+               	<input type='text' class="form-control-plaintext" id="dt" placeholder="Enter date"/>
+               </div>
+               <div class="form-group">
+               	<p class="form-control-plaintext">Select date</p>
+               	<select class="form-control" name="type" id="t">
+               	   <option value="none">Select date</option>
+                      <option value="today">Today</option>
+                      <option value="yesterday">Yesterday</option>
+                      <option value="7-days">Last 7 days</option>
+                      <option value="30-days">Last 30 days</option>
+                      <option value="prev-month">Previous month</option>
+                   </select>
+               </div>
+               <div class="form-group">
+               	<p class="form-control-plaintext">Result</p>
+               	<textarea class="form-control-plaintext" id="dtt" rows="10" cols="30" placeholder="Result date will be displayed here"></textarea>
+               </div>
+               <button class="btn btn-success btn-lg" id="date-btn">Get dates</button>
+             </form>
+    	      
+           </div>
+        </div>
+    </div>
+    
+    
+    <!-- All Jquery -->
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap tether Core JavaScript -->
+    <script src="lib/bootstrap/js/popper.min.js"></script>
+    <script src="lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="lib/sweet-alert/all.js"></script>
+    
+<script>
+ const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+ const displayOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+//$('#dt').val(new Date().toLocaleDateString('en-US',options));
+
+let testDate = setDate('01/04/2020');
+
+
+const data = [
+ {
+  customers:[{}],
+  products:[{}],
+  tax: 0,
+  shipping: 0,
+  date: '12/25/2019'
+},
+ {
+  customers:[{}],
+  products:[{}],
+  tax: 0,
+  shipping: 0,
+  date: '01/04/2020'
+},
+{
+  customers:[{}],
+  products:[{}],
+  tax: 0,
+  shipping: 0,
+  date: '01/03/2020'
+},
+{
+  customers:[{}],
+  products:[{}],
+  tax: 0,
+  shipping: 0,
+  date: '01/03/2020'
+}
+];
+
+let result = data.filter(s => compareDates(s.date,'01/04/2020','less'));
+$('#dt').val(result.length);
+
+$('#date-btn').click(function(e){
+e.preventDefault();
+
+let t= $('#t').val();
+
+if(t == "none"){
+	Swal.fire({
+  position: 'top-end',
+  type: 'warning',
+  title: 'You must select a date',
+  showConfirmButton: false,
+  timer: 1500
+});
+}
+else{
+	/**
+	Swal.fire({
+  position: 'top-end',
+  type: 'warning',
+  title: `You selected ${t}`,
+  showConfirmButton: false,
+  timer: 1500
+});
+**/
+
+ret = getDate(t).toLocaleDateString('en-US',displayOptions);
+$('#dtt').val(ret);
+}
+
+});
+
+function setDate(str){
+	let d = new Date(str);
+	return d;
+}
+
+function compareDates(str1, str2,type){
+	s1 = setDate(str1), s2 = setDate(str2);
+	let x = false;
+	switch(type){
+		case 'equal':
+		  x = s1.getTime() === s2.getTime();
+		break;
+		case 'less':
+		  x = s1.getTime() < s2.getTime();
+		break;
+   }
+ return x;
+}
+
+function getDate(dd){
+	let d = new Date(), ret = null;
+	
+	switch(dd){
+		case "today":
+		ret = d.getDate();
+		break;
+		
+		case "yesterday":
+		ret = d.getDate() - 1;
+		break;
+		
+		case "7-days":
+		ret = d.getDate() - 8;
+		break;
+		
+		case "30-days":
+		ret = d.getDate() - 30;
+		break;
+		
+		case "prev-month":
+		let rr = d.toLocaleDateString('en-US',{month:"short"});
+		Swal.fire({
+  position: 'top-end',
+  type: 'warning',
+  title: `Month: ${rr}`,
+  showConfirmButton: false,
+  timer: 1500
+});
+		ret = d.getMonth() - 30;
+		break;
+    }
+	
+	d.setDate(ret);
+	return d;
+}
+
+
+    Date.prototype.diff = function(y,m,d){
+        var cleanDate = function(x){
+            x.setHours(0);
+            x.setMinutes(0);
+            x.setSeconds(0);
+            return x;
+        }
+
+        var dateToCompare = new Date(y,m,d),
+            date = cleanDate(this),
+            daysCount = [31,28,31,30,31,30,31,31,30,31,30,31],
+            d = (date > dateToCompare ? date : dateToCompare),
+            d1 = (date < dateToCompare ? date : dateToCompare),
+            days = 0,
+            months = 0,
+            years = 0;
+
+        var yearDiff = function(){
+           years = d.getFullYear() - (d1.getFullYear() + 1);
+           years = years < 0 ? 0 : years;
+        }
+
+        var monthDiff = function(){
+            months = d.getFullYear() == d1.getFullYear() ? (d.getMonth() - 1) - d1.getMonth() : d.getMonth() + (12 - (d1.getMonth() + 1));
+            if(months >= 12){
+                years = years + Math.floor(months / 12)
+                months = months % 12;
+            }
+        }
+
+        var getAdjustedDays = function(){
+            var adjustedDays = 0;
+            for(i = (d1.getMonth() + 1); i <= 12; i++){
+                if(daysCount[i] == 31){
+                    adjustedDays++;
+                }
+            }
+            return adjustedDays;
+        }
+
+        var dayDiff = function(){
+             var month = d1.getMonth();
+            if(month == 1 && months == 0 && years == 0){
+                 days = d.getDate() - d1.getDate();
+            }else if(month == 1){
+                days = (isLeapYear(d1.getFullYear()) ? 29 - d1.getDate() : 28 - d1.getDate()) + d.getDate() + (d1.getDate() == d.getDate() ? 1 : 2);
+                days = Math.ceil(days - (getAdjustedDays() / 2));
+           }else{
+                days = (daysCount[month] - d1.getDate()) + d.getDate() + (d1.getMonth() == d.getMonth() ? 2 : 1);
+               days = Math.ceil(days - (getAdjustedDays() / 2));
+           } 
+           getAdjustedDays();
+           if(days >= 30){
+               months = months + Math.floor(days / 30); //averge are 30 days
+               days = days % 30;
+           }
+       }  
+
+       var isLeapYear = function(year) {
+           return ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
+       }
+
+       yearDiff();
+       monthDiff();
+       dayDiff();
+
+       return {"years" : years, "months" : months, "days" : days};
+    }
+
+
+    
+    //console.log(new Date().diff(2005, 8, 25));
+    //console.log(new Date().diff(2018, 8, 25));
+
+
+</script>
+
+
+</body>
+
+</html>

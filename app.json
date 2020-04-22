@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "AstroRideDriver",
+    "description": "Driver app for AstroRide",
+    "slug": "astro-ride-driver-app",
+    "privacy": "public",
+    "sdkVersion": "37.0.0",
+    "platforms": [
+      "android"
+    ],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#652121"
+    },
+    "notification": {
+      "icon": "./assets/images/notification.png"
+    },
+    "updates": {
+      "enabled": true
+    },
+    "assetBundlePatterns": [
+      "assets/**/*"
+    ],
+    "android": {
+      "package": "com.primetech.astrorider",
+      "permissions": [
+        "NOTIFICATIONS",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDq8YO8Juh__b4bhRCoSbDu3gPS407qjlM"
+        }
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.primetech.astrorider",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
+      },
+      "config": {
+        "googleMapsApiKey": "AIzaSyDq8YO8Juh__b4bhRCoSbDu3gPS407qjlM"
+      }
+    }
+  }
+}

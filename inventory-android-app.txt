@@ -1,0 +1,34 @@
+PROFILE
+-Personal information about user
+-edit personal information
+
+CUSTOMERS
+- view Customer information(name,phone,gender,email,shipping address,notes
+-add new customer
+-edit/delete customers
+-search/sort customer list using different criteria
+
+PRODUCTS
+- view product info : SKU, name, img, currency, qty type,orig price, selling price,qty, stock status, categories, S/N
+-add new product
+-edit/delete products
+-search/sort products list using different criteria
+
+SALES
+- view sales information: customer name, sale date, products sold and qty,sale status
+-add new sale
+-edit/delete sale
+-search/sort sales list using different criteria
+
+REPORTS
+-generate reports based on different criteria: Date, Product, Customer, etc
+-2 types of report: business report and stock report
+
+-business report: captures total sold, total profit and total due for the business using different criteria: products, customers, date
+-presents the information in tally form or visually via pie charts, bar charts and line charts
+
+-stock report: captures inventory (s/n, item, units sold, stock status for products
+-presents the information in table form via data table with search and sort functionalities 
+
+SETTINGS
+-application settings will be rendered here. upgrade options will also be rendered here
