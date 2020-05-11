@@ -87,7 +87,7 @@ export default class SignoutScreen extends React.Component {
 				       onPress={() => {this._signout(user, up)}}
 				       title="Submit"
                     >
-                        <CButton style={{width: '100%'}} title="Sign out" background="rgb(101, 33, 33)" color="#fff" />					   
+                        <CButton style={{width: '100%'}} title="Sign out" background="#000" color="#fff" />					   
 				    </SubmitButton>	
 					)}
 					   </UserContext.Consumer>	

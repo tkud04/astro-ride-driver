@@ -18,8 +18,13 @@ import TripsStack from './navigation/TripsStack';
 import PaymentStack from './navigation/PaymentStack';
 import AuthStack from './navigation/AuthStack';
 import SignoutStack from './navigation/SignoutStack';
+import InboxStack from './navigation/InboxStack';
+import EarningsStack from './navigation/EarningsStack';
+import PromotionsStack from './navigation/PromotionsStack';
+import WalletStack from './navigation/WalletStack';
 import AppHomeHeader from './components/AppHomeHeader';
 import SvgIcon from './components/SvgIcon';
+import AstroIcon from './components/AstroIcon';
 import SignoutScreen from './screens/SignoutScreen';
 import * as Permissions from 'expo-permissions';
 import * as FileSystem from 'expo-file-system';
@@ -27,6 +32,7 @@ import { Notifications } from 'expo';
 import * as TaskManager from 'expo-task-manager';
 import FlashMessage from 'react-native-flash-message';
 import {ThemeContext,UserContext} from './MyContexts.js';
+import AppIntroSlider from 'react-native-app-intro-slider';
 
 
 
@@ -44,6 +50,32 @@ const GUEST = {
 	tk: null
 };
 
+
+const slides = [
+  {
+    key: 1,
+    title: "Be Your Own Boss",
+    text: "Make money driving on your own time",
+    image: require('./assets/images/intro-1.jpg'),
+    backgroundColor: '#59b2ab',
+  },
+  {
+    key: 2,
+    title: "Know Your Next Move",
+    text: "Get notified when you're in a busy area",
+    image: require('./assets/images/intro-2.jpg'),
+    backgroundColor: '#febe29',
+  },
+  {
+    key: 3,
+    title: "View Your Earnings Real-time",
+    text: "Explore your daily and weekly earnings with just a click",
+    image: require('./assets/images/intro-3.jpg'),
+    backgroundColor: '#22bcb5',
+  }
+];
+
+
 export default class App extends React.Component {
 constructor(props){
 	super(props);
@@ -57,7 +89,8 @@ constructor(props){
 	user:  GUEST,
 	ttk: null,
 	up: this._updateUser,
-	loggedIn: false
+	loggedIn: false,
+	showApp: true
   };
   
    helpers.getLoggedInUser().then((dt) => {
@@ -72,6 +105,8 @@ constructor(props){
 	
   //this.resolve(this.hu);
   this.navv = null;
+  
+   this.ss = {color: "#fff", backgroundColor: "#000", paddingVertical: 5, borderRadius: 10};
 }
   
   _notificationSubscription = null;
@@ -90,6 +125,43 @@ constructor(props){
 	let lloggedIn = (tttk !== null);
 	this.setState({user: uuser,tk: tttk,loggedIn: lloggedIn});
 	console.log("user context updated with ",[u,lloggedIn]);
+  };
+  
+ _renderItem = ({ item }) => {
+    return (
+      <View style={styles.slide}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Image source={item.image} />
+        <Text style={styles.text}>{item.text}</Text>
+      </View>
+    );
+  }
+  
+  _onDone = () => {
+	  this.setState({showApp: true});
+  };
+  
+   _renderNextButton = () => {
+    return (
+      <View style={styles.buttonCircle}>
+        <Ion
+          name="md-arrow-round-forward"
+          color="rgba(255, 255, 255, .9)"
+          size={24}
+        />
+      </View>
+    );
+  };
+  _renderDoneButton = () => {
+    return (
+      <View style={styles.buttonCircle}>
+        <Ion
+          name="md-checkmark"
+          color="rgba(255, 255, 255, .9)"
+          size={24}
+        />
+      </View>
+    );
   };
 
   render() {
@@ -110,25 +182,38 @@ constructor(props){
 		  return (
         <View style={styles.container}>
           {Platform.OS === 'ios' && <StatusBar barStyle="default" />}
-		  <ThemeContext.Provider>
+		 {this.state.showApp ? (
+		   <ThemeContext.Provider>
 		     <UserContext.Provider value={this.state}>			
 		       <NavigationContainer ref={navigationRef}>
 			    <Drawer.Navigator initialRouteName='Dashboard' drawerContent={props => (<CustomDrawerComponent {...props}/>)}>
 				   {this.state.loggedIn ? (
 				   <>
-				    <Drawer.Screen name="Dashboard" component={AppStack} options={{drawerIcon: () => <SvgIcon xml={helpers.insertAppStyle(AppStyles.svg.cardHouse)} w={40} h={20}/>}} />
-				    <Drawer.Screen name="Trips" component={TripsStack} options={{drawerIcon: () => <SvgIcon xml={helpers.insertAppStyle(AppStyles.svg.logoCar)} w={40} h={20}/>}} />
-				    <Drawer.Screen name="Payment" component={PaymentStack} options={{drawerIcon: () => <SvgIcon xml={helpers.insertAppStyle(AppStyles.svg.cardWallet)} w={40} h={20}/>}} />
-				    <Drawer.Screen name="Sign out" component={SignoutStack} options={{drawerIcon: () => <SvgIcon xml={helpers.insertAppStyle(AppStyles.svg.cardSignOut)} w={40} h={20}/>}} />
+				    <Drawer.Screen name="Dashboard" component={AppStack} options={{drawerIcon: () => <AstroIcon xml={AppStyles.svg.ionHome} w={40} h={20} ss={this.ss}/>}} />
+				    <Drawer.Screen name="Inbox" component={InboxStack} options={{drawerIcon: () => <AstroIcon xml={AppStyles.svg.ionMail} w={40} h={20} ss={this.ss}/>}} />
+				    <Drawer.Screen name="Promotions" component={PromotionsStack} options={{drawerIcon: () => <AstroIcon xml={AppStyles.svg.ionHome} w={40} h={20} ss={this.ss}/>}} />
+				    <Drawer.Screen name="Earnings" component={EarningsStack} options={{drawerIcon: () => <AstroIcon xml={AppStyles.svg.ionCash} w={40} h={20} ss={this.ss}/>}} />
+				    <Drawer.Screen name="Wallet" component={WalletStack} options={{drawerIcon: () => <AstroIcon xml={AppStyles.svg.ionWallet} w={40} h={20} ss={this.ss}/>}} />
+				     <Drawer.Screen name="Sign out" component={SignoutStack} options={{drawerIcon: () => <AstroIcon xml={AppStyles.svg.cardSignOut} w={40} h={20} ss={this.ss}/>}} />
 					</>
 				   ) : (
-				    <Drawer.Screen name="Sign in" component={AuthStack} options={{drawerIcon: () => <SvgIcon xml={helpers.insertAppStyle(AppStyles.svg.cardSignIn)} w={40} h={20}/>}} />
+				    <Drawer.Screen name="Sign in" component={AuthStack} options={{drawerIcon: () => <AstroIcon xml={AppStyles.svg.ionLoginOutline} w={40} h={20} ss={this.ss}/>}} />
 				   )}
            
                 </Drawer.Navigator>
 			   </NavigationContainer>
 		     </UserContext.Provider>
 		  </ThemeContext.Provider>
+		 ) : (
+		   <AppIntroSlider 
+		   renderItem={this._renderItem} 
+		   data={slides} 
+		   onDone={this._onDone}
+		   renderDoneButton={this._renderDoneButton}
+           renderNextButton={this._renderNextButton}
+		   />
+		 )}
+		 
           <FlashMessage position="bottom" />
         </View>
       );	
@@ -186,4 +271,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
 	fontFamily: 'Roboto'
   },
+  slide: {
+	  
+  }
 });

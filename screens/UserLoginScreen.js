@@ -9,7 +9,7 @@ import TitleHeader from '../components/TitleHeader';
 import * as Permissions from 'expo-permissions';
 import {ThemeContext,UserContext} from '../MyContexts';
 //import * as SMS from 'expo-sms';
-import {ScrollView} from 'react-native';
+import {ScrollView, Animated} from 'react-native';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 
 import { Notifications } from 'expo';
@@ -25,7 +25,9 @@ export default class UserLoginScreen extends React.Component {
 	               passwordBorderBottomColor: '#000',				  			  
 				   loading: false,
 				   phone: this.dt.to,			 
-				   password: ""			              				   
+				   password: "",
+                   isLoading: false,
+                   fadeAnim: new Animated.Value(0)				   
 				 };	
 				 
 	this.navv = null;
@@ -65,35 +67,8 @@ export default class UserLoginScreen extends React.Component {
 			 message: "Signing you in..",
 			 type: 'info'
 		 });
-	  
-	   //upp([{},"test"]);
-	  
-
-		
-		 
-     helpers.login(this.dt,(res) => {
-		 console.log("res: ", res);
-		 
-		 if(res.status == "ok"){
-			    showMessage({
-			      message: "Welcome back! Fetching your dashboard..",
-			      type: 'success'
-		        });
-		       // dt.tk = res.token;
-				
-		        //Log user in
-		        upp([res.user]);  
-		   }
-		   else{
-			    showMessage({
-			      message: "There was a problem signing you up, please try again later",
-			      type: 'danger'
-		        });
-		    
-		   }
-		   
-	 });
-
+		 this.setState({isLoading: true});
+     helpers.login(this.dt,upp);
 	}
 	 
   }
@@ -101,12 +76,45 @@ export default class UserLoginScreen extends React.Component {
   render() {
 	 let navv = this.props.navigation;
 	  this.navv = navv;
+	  
+	   if(this.state.isLoading){
+	Animated.loop(
+	Animated.sequence([
+	Animated.timing(this.state.fadeAnim,{
+		toValue: 1,
+		duration: 1000
+	}),
+	Animated.timing(this.state.fadeAnim,{
+		toValue: 0,
+		duration: 1000
+	})
+	])
+	).start();
+    }
+	  
     return (
 	       <BackgroundImage source={require('../assets/images/bg.jpg')}>
+		   <UserContext.Consumer>
+					  {({user,up}) => (
 		   <ScrollView>
 	        <Container>	     
                  
 				   <Row style={{flex: 1, marginTop: 10, height: '100%'}}>
+				   
+				   {this.state.isLoading ? (
+					 <NoteView style={{ justifyContent: 'center'}}>
+					   <Animated.View
+						  style={{opacity: this.state.fadeAnim}}
+					   >
+						<TitleHeader bc="#000" tc="#000" title="Processing.."/>
+				       </Animated.View>
+				     </NoteView>
+				   ) : (
+				    <NoteView style={{ alignItems: 'center', justifyContent: 'center'}}>
+				     <TitleHeader bc="#000" tc="#000" title="Enter your password"/>
+					</NoteView>
+					)}
+				   
 				     <ProductInputWrapper>
 					 <ProductDescription>Phone number</ProductDescription>
 				    <ProductInput
@@ -150,20 +158,18 @@ export default class UserLoginScreen extends React.Component {
 				   </Row>
 				   
 				  
-				   <Row style={{flex: 1,justifyContent: 'flex-end', width: '90%'}}>
-				   <UserContext.Consumer>
-					  {({user,up}) => (
+				  <Row style={{flex: 1,justifyContent: 'flex-end', width: '90%'}}>
 				   <SubmitButton
 				       onPress={() => {this._continue(user, up)}}
 				       title="Submit"
                     >
-                        <CButton title="Submit" background="rgb(101, 33, 33)" color="#fff" />					   
-				    </SubmitButton>	
-					)}
-					   </UserContext.Consumer>		
+                        <CButton title="Submit" background="#000" color="#fff" />					   
+				    </SubmitButton>		
                     </Row>					
 			</Container>
 			</ScrollView>
+			)}
+					   </UserContext.Consumer>		
 			</BackgroundImage>
     );
   }

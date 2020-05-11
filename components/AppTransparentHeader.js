@@ -15,9 +15,19 @@ return (
 <Container>
 <HeaderView>
   <ButtonsView>
-  <MenuButton onPress={() => {console.log("pressing.."); navv.toggleDrawer()}}>
-		  <HeaderMenuButton xml={AppStyles.svg.headerBlackHamburger} w={30} h={30} ss={{marginTop: 10, marginLeft: 20, alignSelf: 'flex-start'}}/>
-		</MenuButton>
+  <MenuButtonView>
+  <MenuButton onPress={() => { navv.toggleDrawer()}}>
+	 <HeaderMenuButton xml={AppStyles.svg.headerBlackHamburger} w={30} h={30} ss={{marginTop: 10, marginLeft: 20, alignSelf: 'flex-start'}}/>
+  </MenuButton>
+  </MenuButtonView>
+  <EarningsView>
+   <EarningsText>₦0.00</EarningsText>
+  </EarningsView>
+  <MenuButtonView>
+  <MenuButton onPress={() => { navv.toggleDrawer()}} style={{alignSelf: 'flex-end'}}>
+	 <HeaderMenuButton xml={AppStyles.svg.ionSearch} w={30} h={30} ss={{marginTop: 10, marginRight: 20, alignSelf: 'flex-end'}}/>
+  </MenuButton>
+  </MenuButtonView>
   </ButtonsView>
 </HeaderView>  
 </Container>
@@ -49,15 +59,16 @@ const Title = styled.Text`
 
 const HeaderView = styled.View`
 flex-direction: column;
- justify-content: flex-start;
+ justify-content: space-between;
  align-items: flex-start;
 
 `;
 
 const ButtonsView = styled.View`
 flex-direction: row;
-justify-content: space-evenly;
+justify-content: space-between;
 margin-top: 20px;
+width: 100%;
  
 `;
 
@@ -80,6 +91,10 @@ const MenuButton = styled.TouchableOpacity`
 
 `;
 
+const MenuButtonView =  styled.View`
+
+`;
+
 const OverlayView = styled.View`
 position: absolute;
 top: 0;
@@ -89,3 +104,20 @@ bottom: 0;
 background-color: rgba(101, 33, 33,0.5);
 height: ${AppStyles.headerHeight - 20};
 `;
+
+const EarningsView = styled.View`
+flex-direction: row;
+background-color: black;
+border-radius: 20;
+width: 30%;
+margin-top: 10;
+paddingVertical: 5;
+align-items: center;
+justify-content: center;
+`;
+
+const EarningsText = styled.Text`
+color: #fff;
+font-size: 20;
+`;
+

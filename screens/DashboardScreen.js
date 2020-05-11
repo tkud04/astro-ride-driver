@@ -7,10 +7,11 @@ import MapView,{Marker} from 'react-native-maps';
 import * as FileSystem from 'expo-file-system';
 import TitleHeader from '../components/TitleHeader';
 import HeaderMenuButton from '../components/HeaderMenuButton';
+import AstroIcon from '../components/AstroIcon';
 import * as Permissions from 'expo-permissions';
 import {ThemeContext,UserContext} from '../MyContexts';
 import * as Location from 'expo-location';
-import {ScrollView, Dimensions, ActivityIndicator} from 'react-native';
+import {ScrollView, Dimensions, ActivityIndicator, Animated} from 'react-native';
 import {showMessage, hideMessage} from 'react-native-flash-message';
 
 import { Notifications } from 'expo';
@@ -45,7 +46,10 @@ export default class DashboardScreen extends React.Component {
                        longitudeDelta: LONGITUDE_DELTA,
                      },
 	                 isLoadingComplete: false,
-					 tryAgain: false
+					 tryAgain: false,
+					 networkProblem: false,
+					 networkProblemText: "",
+					 fadeAnim: new Animated.Value(0)
 				 };	
 				 
 	this.navv = null;
@@ -91,6 +95,7 @@ export default class DashboardScreen extends React.Component {
   }
 
   _getLocationAsync = async () => {
+	  try{
 	  this.setState({ tryAgain: false});
 	  const { status } = await Location.requestPermissionsAsync();
     if (status === 'granted') {
@@ -140,7 +145,15 @@ export default class DashboardScreen extends React.Component {
 			 type: 'warning'
 		 });
 	}
-	
+  }
+  catch(e){
+	  console.log("e: ",e.toString());
+	  this.setState({ 
+	      networkProblem: true,
+		  networkProblemText: "Couldn't load map. Please check your internet connection and try again",
+		  isLoadingComplete: true
+	  });
+  }
   }
   
   _handleMapRegionChange = mapRegion => {
@@ -155,6 +168,22 @@ export default class DashboardScreen extends React.Component {
 			//console.log("current coords: ",this.state.markerCoords);
 		  
 	  }
+	  
+	if(!this.state.isLoadingComplete){
+	   Animated.loop(
+	    Animated.sequence([
+	      Animated.timing(this.state.fadeAnim,{
+		    toValue: 1,
+		    duration: 1000
+	      }),
+	      Animated.timing(this.state.fadeAnim,{
+		   toValue: 0,
+		   duration: 1000
+	      })
+	    ])
+	  ).start();
+    }
+	
     return (
 	       <BackgroundImage source={require('../assets/images/bg.jpg')}>
 	        <Container>	     
@@ -163,12 +192,14 @@ export default class DashboardScreen extends React.Component {
 					  {this.state.isLoadingComplete ? (
 					 <Row style={{flex: 1, marginTop: 10, width: '100%'}}>
 					 
-				     <MapView 
+					 {!this.state.networkProblem ? (
+					   <>
+					    <MapView 
 					   ref={ref => {
                          this.map = ref;
                        }}
                        mapType="standard"
-					   style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height - 220}}
+					   style={{width: Dimensions.get('window').width, height: Dimensions.get('window').height - 150}}
 					   region={this.state.region}
                        onRegionChange={region => this._handleMapRegionChange(region)}
    				     >
@@ -179,35 +210,52 @@ export default class DashboardScreen extends React.Component {
 						  draggable={true}
 					   >
 					   <MarkerView>
-					  <HeaderMenuButton xml={AppStyles.svg.cardLocation} w={40} h={30} ss={{ alignItems: 'center', justifyContent: 'center'}}/>
+					  <AstroIcon xml={AppStyles.svg.cardLocation} w={40} h={30} ss={{ alignItems: 'center', justifyContent: 'center'}}/>
 					  </MarkerView>
 					   </Marker>
 					 </MapView>	
-					 <WWrapper>
-                    <UserContext.Consumer>
-					  {({user,up}) => (
+
 					   <WelcomeView>
-						  <WelcomeText>{this._getGreeting(user.fname)}</WelcomeText>
+						  <SubmitButton
+						   onPress={() => {}}
+						  >
+						  <StatusButtonView>
+						  <StatusButtonVieww>
+						   <StatusButtonText>GO</StatusButtonText>
+						  </StatusButtonVieww>
+						  </StatusButtonView>
+						  </SubmitButton>
 					  </WelcomeView>
-					  )}
-					   </UserContext.Consumer>	
+					  </>
+					 ) : (
+					   <NetworkProblemView>
+					     <NetworkProblemView2>
+					      <NetworkProblemText>{this.state.networkProblemText}</NetworkProblemText>
+						 </NetworkProblemView2>
+					   </NetworkProblemView>
+					 )}
+				    
+					 <WWrapper>
+                    
 					  <SubmitButton
 				       onPress={() => {this._next()}}
 				       title="Submit"
                     >
-                      <WhereToView>
-					    <WhereTo>Where to?</WhereTo>
-					  </WhereToView>		   
+                      <TripsPlannerView>
+					    <AstroIcon xml={AppStyles.svg.ionCaretDownOutline} w={30} h={30} ss={{marginTop: 10}}/>
+						<TripsPlannerText>You're offline</TripsPlannerText>
+						<AstroIcon xml={AppStyles.svg.ionOptionsOutline} w={30} h={30} ss={{marginTop: 10}}/>
+					  </TripsPlannerView>		   
 				    </SubmitButton>	
 					 <SubmitButton
                     >
 				     <LastTripView>
 					   <LastTripIcon>
-					      <HeaderMenuButton xml={AppStyles.svg.cardMapMarker2} w={20} h={20} ss={{marginLeft: 4, alignItems: 'center', justifyContent: 'center'}}/>
+					      <AstroIcon xml={AppStyles.svg.ionSunnyOutline} w={30} h={30} ss={{marginLeft: 4, alignItems: 'center', justifyContent: 'center'}}/>
 					   </LastTripIcon>
 					   <LastTrip>
-					     <TripLocation>No previous trips</TripLocation>
-					     <Address>Last trip address will be shown here</Address>
+					     <TripLocation>Today's opportunities</TripLocation>
+					     <Address>Top ways to earn more</Address>
 					   </LastTrip>
 					 </LastTripView>
 					</SubmitButton>	
@@ -227,8 +275,11 @@ export default class DashboardScreen extends React.Component {
 					    
                        ): (
 					     <NoteView>
-						  <Note>Loading..</Note>
-						  <ActivityIndicator size="small" color="#0000ff" />
+						   <Animated.View
+						  style={{opacity: this.state.fadeAnim}}
+					   >
+						<TitleHeader bc="#000" tc="#000" title="Loading your dashboard"/>
+				       </Animated.View>
 						</NoteView>
 					   )}						
 				       </Row>
@@ -350,6 +401,8 @@ const BottomInputs = styled.View`
 const NoteView = styled.View`
 flex-direction: row;
 justify-content: center;
+align-items: center;
+width: 100%;
 `;
 
 const TestView = styled.View`
@@ -371,10 +424,13 @@ const Note = styled.Text`
 `;
 
 const WelcomeView = styled.View`
-border-bottom-width: 1;
-border-color: #eee;
-margin-bottom: 10;
+margin-bottom: 5;
+background-color: transparent;
+position: absolute;
+bottom: 130;
+right: 110;
 `;
+
 
 const WelcomeText = styled.Text` 
                    color: rgb(101, 33, 33);
@@ -409,14 +465,17 @@ const WWrapper = styled.View`
 
 `;
 
-const WhereToView = styled.View`
-background-color: #dedede;
+const TripsPlannerView = styled.View`
 margin-bottom: 10px;
 margin-left: 5px;
 width: 90%;
+border-bottom-width: 1;
+border-color: #eee;
+flex-direction: row;
+justify-content: space-between;
 `;
 
-const WhereTo = styled.Text`
+const TripsPlannerText = styled.Text`
 font-size: 22px;
 padding-left: 10px;
 padding-vertical: 12px;
@@ -432,7 +491,7 @@ const LastTripIcon = styled.View`
 flex: 1;
 margin-right: 5px;
 
-		   background: #adacac;
+		   background: #fff;
 		   border-radius: 44px;
 		   align-items: center;
 		   justify-content: center;
@@ -454,4 +513,42 @@ font-size: 13px;
 
 const MarkerView = styled.View`
 
+`;
+
+const NetworkProblemView = styled.View`
+width: ${Dimensions.get('window').width};
+height: ${Dimensions.get('window').height - 220};
+align-items: center;
+justify-content: center;
+`;
+
+const NetworkProblemView2 = styled.View`
+align-items: center;
+justify-content: center;
+background-color: #000;
+padding-vertical: 5;
+`;
+
+const NetworkProblemText = styled.Text`
+font-size: 20;
+text-align: center;
+color: #fff;
+`;
+
+const StatusButtonView = styled.View`
+align-items: center;
+justify-content: center;
+margin-vertical: 10;
+`;
+const StatusButtonVieww = styled.View`
+background-color: #000;
+border-radius: 100;
+align-items: center;
+justify-content: center;
+width: 100;
+`;
+
+const StatusButtonText = styled.Text`
+font-size: 25;
+color: #fff;
 `;

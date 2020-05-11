@@ -61,7 +61,8 @@ export default class AddNumberScreen extends React.Component {
 	 };  
 	 this.setState({isLoading: true});
 	 
-     helpers.sendSMSAsync(dt, this.navv);
+     helpers.sendSMSAsync(dt, this.navv, this.state.isLoading);
+	 //this.setState({isLoading: false});
 	}
 	 
   }

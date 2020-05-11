@@ -18,44 +18,45 @@ const Stack = createStackNavigator();
 
 let AuthStack = () => (
 <Stack.Navigator>
-				  <Stack.Screen
+				<Stack.Screen
                   name="AddNumber"
 	              component={AddNumberScreen}
 				  options={({route}) => ({
-					headerStyle: {
-		            backgroundColor: AppStyles.headerBackground,
-		            height: AppStyles.headerHeight
+				  headerStyle: {
+		            backgroundColor: "#000",
+		            height: 50
 	              },
-	             header: () => <AppHomeHeader xml={AppStyles.svg.headerPhone}  r = {route} title="Sign up" subtitle="Enter phone number"  sml={40}/>,
-	             headerTintColor: AppStyles.headerColor,
+	             header: () => <AppInputImageHeader r = {route} title="AstroRide" subtitle="Add Number"  sml={10}/>,
+	             //headerTintColor: AppStyles.headerColor,
 	             headerLeft: null  
 				  })}
 	              
-                /> 
+                />
 				<Stack.Screen
                   name="VerifyNumber"
 	              component={VerifyNumberScreen}
 				  options={({route}) => ({
-					headerStyle: {
-		            backgroundColor: AppStyles.headerBackground,
-		            height: AppStyles.headerHeight
+				  headerStyle: {
+		            backgroundColor: "#000",
+		            height: 50
 	              },
-	             header: () => <AppInputImageHeader xml={AppStyles.svg.headerPhone}  leftParam = "goBack" r = {route} title="Sign up" subtitle="Verify phone number"  sml={30}/>,
-	             headerTintColor: AppStyles.headerColor,
+	             header: () => <AppInputImageHeader r = {route} title="AstroRide" subtitle="Verify Number"  sml={10}/>,
+	             //headerTintColor: AppStyles.headerColor,
 	             headerLeft: null  
 				  })}
 	              
-                /> 
+                />
+
 				<Stack.Screen
                   name="UserLogin"
 	              component={UserLoginScreen}
-				  options={({route}) => ({
-					headerStyle: {
-		            backgroundColor: AppStyles.headerBackground,
-		            height: AppStyles.headerHeight
+				   options={({route}) => ({
+				  headerStyle: {
+		            backgroundColor: "#000",
+		            height: 50
 	              },
-	             header: () => <AppInputImageHeader xml={AppStyles.svg.headerPhone}  leftParam = "goBack" r = {route} title="Sign up" subtitle="Login"  sml={30}/>,
-	             headerTintColor: AppStyles.headerColor,
+	             header: () => <AppInputImageHeader r = {route} title="AstroRide" subtitle="Login"  sml={10}/>,
+	             //headerTintColor: AppStyles.headerColor,
 	             headerLeft: null  
 				  })}
 	              
@@ -65,12 +66,12 @@ let AuthStack = () => (
 	              component={AddNameScreen}				  
 				  //initialParams={{goBack: () => {this.props.navigation.goBack()}}}
 				  options={({route}) => ({
-					headerStyle: {
-		            backgroundColor: AppStyles.headerBackground,
-		            height: AppStyles.headerHeight
+				  headerStyle: {
+		            backgroundColor: "#000",
+		            height: 50
 	              },
-	             header: () => <AppInputImageHeader xml={AppStyles.svg.headerPhone}  leftParam = "goBack" r = {route} title="Sign up" subtitle="What's your name?"  sml={30}/>,
-	             headerTintColor: AppStyles.headerColor,
+	             header: () => <AppInputImageHeader r = {route} title="AstroRide" subtitle="Add Name"  sml={10}/>,
+	             //headerTintColor: AppStyles.headerColor,
 	             headerLeft: null  
 				  })}
 	              
@@ -78,13 +79,13 @@ let AuthStack = () => (
 				<Stack.Screen
                   name="AddLogin"
 	              component={AddLoginScreen}
-				  options={({route}) => ({
-					headerStyle: {
-		            backgroundColor: AppStyles.headerBackground,
-		            height: AppStyles.headerHeight
+				   options={({route}) => ({
+				  headerStyle: {
+		            backgroundColor: "#000",
+		            height: 50
 	              },
-	             header: () => <AppInputImageHeader xml={AppStyles.svg.headerPhone}  leftParam = "goBack" r = {route} title="Sign up" subtitle="Email and password"  sml={30}/>,
-	             headerTintColor: AppStyles.headerColor,
+	             header: () => <AppInputImageHeader r = {route} title="AstroRide" subtitle="Email and password"  sml={10}/>,
+	             //headerTintColor: AppStyles.headerColor,
 	             headerLeft: null  
 				  })}	 
                 />

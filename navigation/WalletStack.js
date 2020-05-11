@@ -3,32 +3,34 @@ import { Platform } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import AppInputImageHeader from '../components/AppInputImageHeader';
 import AppHomeHeader from '../components/AppHomeHeader';
+import AppTransparentHeader from '../components/AppTransparentHeader';
+import AppTransparentInputHeader from '../components/AppTransparentInputHeader';
 import AppStyles from '../styles/AppStyles';
-import SignoutScreen from '../screens/SignoutScreen';
+import DashboardScreen from '../screens/DashboardScreen';
+
+
 
 /////////////////////////////////////////////////
 
 const Stack = createStackNavigator();
 
 
-let PaymentStack = () => (
+let WalletStack = () => (
 <Stack.Navigator>
 				<Stack.Screen
-                  name="Inbox"
-	              component={SignoutScreen}
+                  name="Wallet"
+	              component={DashboardScreen}
 				  options={({route}) => ({
-				  headerStyle: {
-		            backgroundColor: "#000",
-		            height: 50
-	              },
-	             header: () => <AppInputImageHeader r = {route} title="AstroRide" subtitle="Sign out"  sml={10}/>,
+				  headerTransparent: true,
+	             header: () => <AppTransparentHeader xml={AppStyles.svg.chartBar}  r = {route} title="AstroRide" subtitle="Dashboard"  sml={100}/>,
 	             //headerTintColor: AppStyles.headerColor,
 	             headerLeft: null  
 				  })}
 	              
-                />		
+                />
+
 				
                 </Stack.Navigator>
 );
 
-export default PaymentStack;
+export default WalletStack;

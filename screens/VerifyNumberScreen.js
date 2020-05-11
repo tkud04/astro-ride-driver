@@ -79,6 +79,7 @@ export default class VerifyNumberScreen extends React.Component {
 	  this.setState({isLoading: true});
 		  helpers.checkIfUserExists(this.dt.to,(res) => {
 			  console.log("res: ",res);
+			  this.setState({isLoading: true});
 			  if(res.status === "ok"){
 			     if(res.exists){
 				     this.navv.navigate('UserLogin',{

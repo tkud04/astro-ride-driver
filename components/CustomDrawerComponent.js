@@ -3,6 +3,7 @@ import {View,ScrollView, Button,SafeAreaView,TouchableNativeFeedback} from 'reac
 import styled from 'styled-components';
 import AppStyles from '../styles/AppStyles';
 import SvgIcon from './SvgIcon';
+import AstroIcon from './AstroIcon';
 import * as helpers from '../Helpers';
 import * as RootNavigation from '../RootNavigation.js';
 import {
@@ -23,6 +24,12 @@ _getName = (u) =>{
 _getEmail = (u) =>{
 	let r = "Sign in";
 	if(u.email) r = u.email; 
+	return r;
+}
+
+_getRating = (u) =>{
+	let r = "4.5";
+	//if(u.email) r = u.email; 
 	return r;
 }
 
@@ -48,11 +55,16 @@ const CustomDrawerComponent = props => {
 				  <ProfileButton
 			  onPress={() => {_goToProfile(user)}}
 			 >
-            <View style={{ backgroundColor: AppStyles.themeColor , marginTop: -5}}>
-              <View style={{ marginLeft: 5, marginBottom: 5, marginTop: 0}}>
+            <View style={{ backgroundColor: "#000", marginTop: -5}}>
+              <View style={{ marginLeft: 5, marginBottom: 5, marginTop: 0, flexDirection: "row"}}>
 			    <Logo source={require('../assets/images/bg.jpg')}/>
-				<Username style={{ color: '#f9f9f9', marginTop: 5, marginLeft: '5%', fontFamily: 'sans-serif-condensed' }}>{`${_getName(user)}`}</Username>
-				<Email style={{ color: '#f9f9f9', marginTop: 5, marginLeft: '5%', fontFamily: 'sans-serif-condensed' }}>{`${_getEmail(user)}`}</Email>
+				<View style={{alignItems: 'flex-start',marginLeft: 5}}>
+				<Username style={{ color: '#f9f9f9', marginTop: 13, fontFamily: 'sans-serif-condensed' }}>{`${_getName(user)}`}</Username>
+				 <View style={{color: "#fff", flexDirection: "row", alignItems: 'center', justifyContent: 'center'}}>
+				   <AstroIcon xml={AppStyles.svg.ionStar} w={20} h={20} ss={{marginTop: 0, marginLeft: 3, marginRight: 3}}/>
+				   <Rating>5.5</Rating>
+				 </View>
+				</View>
               </View>
             </View>
 			</ProfileButton>
@@ -60,10 +72,17 @@ const CustomDrawerComponent = props => {
 				  <DrawerItemList {...props}/>
 				  
 				  <View elevation={6} style={{ backgroundColor: '#ffffff' }}>
+
           <TouchableNativeFeedback background={ripple}>
             <FooterItem>
               <SvgIcon xml={AppStyles.svg.cardUsers} w="10%" h="10%"/>
-              <FooterItemText style={{ fontFamily: 'sans-serif-medium' }}>Support</FooterItemText>
+              <FooterItemText style={{ fontFamily: 'sans-serif-medium' }}>Account</FooterItemText>
+            </FooterItem>
+          </TouchableNativeFeedback>
+		  <TouchableNativeFeedback background={ripple}>
+            <FooterItem>
+              <SvgIcon xml={AppStyles.svg.cardUsers} w="10%" h="10%"/>
+              <FooterItemText style={{ fontFamily: 'sans-serif-medium' }}>Help</FooterItemText>
             </FooterItem>
           </TouchableNativeFeedback>
         </View>
@@ -85,8 +104,10 @@ const Username = styled.Text`
 font-size: 15;
 `;
 
-const Email = styled.Text`
-margin-bottom: 5px;
+const Rating = styled.Text`
+margin-vertical: 5px;
+color: #f9f9f9;
+font-family: sans-serif-condensed;
 `;
 
 const Divider = styled.View`

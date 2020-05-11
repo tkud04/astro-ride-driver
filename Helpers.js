@@ -98,7 +98,7 @@ import {showMessage, hideMessage} from 'react-native-flash-message';
 
 
 export async function signup(pm, callback) {
-	const PUSH_ENDPOINT = `${ENDPOINT}/app/signup`;
+	const PUSH_ENDPOINT = `${ENDPOINT}/app/driver-signup`;
 	//const PUSH_ENDPOINT = encodeURIComponent(`https://www.eschoolng.net/mobileapp/expo_url.php?ppp=n`);
   const { status: existingStatus } = await Permissions.getAsync(
     Permissions.NOTIFICATIONS
@@ -122,8 +122,14 @@ export async function signup(pm, callback) {
   // Get the token that uniquely identifies this device
   let token = await Notifications.getExpoPushTokenAsync();
 
+  
+
   // POST the token to your backend server from where you can retrieve it to send push notifications.
   let upu = PUSH_ENDPOINT + "?tk=" + token + "&id=" + pm.id + "&to=" + pm.to + "&fname=" + pm.fname + "&lname=" + pm.lname + "&gender=" + pm.gender + "&email=" + pm.email + "&password=" + pm.password;
+  showMessage({
+			 message: `upu: ${upu}`,
+			 type: 'info'
+		 });
   return fetch(upu, {
     method: 'GET'
   })
@@ -139,12 +145,20 @@ export async function signup(pm, callback) {
 		   }
 		   })
     .catch(error => {
-		   console.log(`Failed to fetch push endpoint ${PUSH_ENDPOINT}: ${error}`);		
+		   console.log(`Failed to fetch push endpoint ${PUSH_ENDPOINT}: ${error}`);
+            showMessage({
+			 message: `Failed to fetch push endpoint ${PUSH_ENDPOINT}: ${error}`,
+			 type: 'info'
+		    });		   
 	   })
 	   .then(res => {
-		   console.log(res); 
+		   console.log(res);
+            		   
 		   res.tk = token;
-		   
+		   showMessage({
+			 message: `res: ${JSON.stringify(res)}`,
+			 type: 'info'
+		    });
 		   saveDataOnSignup(res);
 		   
 		   callback(res);
@@ -154,40 +168,20 @@ export async function signup(pm, callback) {
 	   });
 }
 
-export async function login(data,callback)
+export function login(data,callback)
 {
-	const PUSH_ENDPOINT = `${ENDPOINT}/app/login`;
-	 const { status: existingStatus } = await Permissions.getAsync(
-    Permissions.NOTIFICATIONS
-  );
-  let finalStatus = existingStatus;
-
-  // only ask if permissions have not already been determined, because
-  // iOS won't necessarily prompt the user a second time.
-  if (existingStatus !== 'granted') {
-    // Android remote notification permissions are granted during the app
-    // install, so this will only ask on iOS
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    finalStatus = status;
-  }
-
-  // Stop here if the user did not grant permissions
-  if (finalStatus !== 'granted') {
-    return;
-  }
-
-  // Get the token that uniquely identifies this device
-  let token = await Notifications.getExpoPushTokenAsync();
-
+	const PUSH_ENDPOINT = `${ENDPOINT}/app/driver-login`;
+    let token = "";
+   
   // POST the token to your backend server from where you can retrieve it to send push notifications.
   let upu = PUSH_ENDPOINT + "?tk=" + token + "&id=" + data.to + "&password=" + data.password;
-  return fetch(upu, {
+  //console.log("calling upu: ", upu);
+  fetch(upu, {
     method: 'GET'
   })
   .then(response => {
 	    //console.log(response);
          if(response.status === 200){
-			   //console.log(response);
 			   
 			   return response.json();
 		   }
@@ -200,16 +194,22 @@ export async function login(data,callback)
            return {status: "error:", message: "Couldn't fetch login URL [HARD FAIL]"};		   
 	   })
 	   .then(res => {
-		   //console.log('Test', JSON.stringify(res));
-		   
-		   saveData(res);
-		   /**if(res.status == "ok"){
-			   
+		   console.log('res', res);
+
+		   if(res.status == "ok"){
+			   saveData(res);
+			    showMessage({
+			      message: "Welcome back! Fetching your dashboard..",
+			      type: 'success'
+		        });
+				callback([res.user]);  
 		   }
 		   else{
-			   
-		   }**/
-		   callback(res);
+			    showMessage({
+			      message: "There was a problem signing in, please try again later",
+			      type: 'danger'
+		        });
+		   }
 		   
 	   }).catch(error => {
 		   console.log(`Unknown error: ${error}`);			
@@ -219,12 +219,7 @@ export async function login(data,callback)
 export async function logout(callback) {
 	let ret = {status: "Unknown"};
 	 try{
-	 //**
-	 await AsyncStorage.removeItem('astrd_user');
-	  await AsyncStorage.removeItem('products');
-	  await AsyncStorage.removeItem('customers');
-	  //**/
-	  await AsyncStorage.removeItem('sales');
+	 await AsyncStorage.removeItem('astrd_driver');
 	  
 	  ret = {status: "ok"};
 	 }
@@ -239,7 +234,7 @@ export async function saveData(dt){
 	console.log(dt);
 	
 	
-	await AsyncStorage.setItem('astrd_user',JSON.stringify(dt.user))
+	await AsyncStorage.setItem('astrd_driver',JSON.stringify(dt.user))
 	                  .then(() => {
 						  console.log("user profile saved");
 					  })
@@ -250,7 +245,7 @@ export async function saveData(dt){
 }
 
 export async function saveDataOnSignup(dt){
-	await AsyncStorage.setItem('astrd_user',JSON.stringify(dt))
+	await AsyncStorage.setItem('astrd_driver',JSON.stringify(dt))
 	                  .then(() => {
 						  console.log("user profile saved on signup");
 					  })
@@ -648,7 +643,7 @@ export async function getLoggedInUser(){
 	let ret = {};
 
 	try{
-		let uuu = await AsyncStorage.getItem('astrd_user');
+		let uuu = await AsyncStorage.getItem('astrd_driver');
 		//console.log(customers);
 		if(uuu !== null){
 			let ret = JSON.parse(uuu);
@@ -668,7 +663,7 @@ export async function getLoggedInUser2(callback){
 	let ret = {id: 0, name: "Guest"};
 
 	try{
-		let uuu = await AsyncStorage.getItem('astrd_user');
+		let uuu = await AsyncStorage.getItem('astrd_driver');
 		//console.log(customers);
 		if(uuu !== null){
 			let ret = JSON.parse(uuu);
@@ -1118,7 +1113,7 @@ export function formatPhoneNumber(number){
 	return number;
 }
 
-export function sendSMSAsync(dt,navv){
+export function sendSMSAsync(dt,navv,s){
 		//let id= "38973", secret = "vZXZJbO0BcElg7WnelONbohkhPdDI8Pd7M", pass = "QX1RzewUuERRScGGo4XImNVZv4OJbAW2yXU7bq1G4S";
 		let id= "39026", secret = "VXCVcIu0nkrj5sU5log4kTYP7oJTORDKPfF1Y91lusFzV", pass = "EhZUlkOjaVIUPwLshAIWBG6D2A5I91jNiiIECwYMrHGhds";
 		let senderid = "AstroRide", to = dt.to, msg = `Your code is ${dt.code}`;
@@ -1144,24 +1139,34 @@ export function sendSMSAsync(dt,navv){
 	   })
 	   .then(res => {
 		   console.log("sms result: ",res);
-           let xx = res.split(' '); 	
-            console.log("xx: ",xx);		   
+		   if(!res){
+			   s = false;
+			   showMessage({
+			    message: "Network error. Please check your network connection and try again.",
+			    type: 'danger'
+		      });
+		   }
+		   else{
+			  let xx = res.split(' '); 	
+              console.log("xx: ",xx);		   
 		   
-		   if(xx[1] !== "9000"){
+		      if(xx[1] !== "9000"){
 			   			   showMessage({
-			 message: `Test code is ${dt.code}`,
-			 type: 'info'
-		 });
+			    message: `Test code is ${dt.code}`,
+			    type: 'info'
+		      });
 			   navv.navigate('VerifyNumber',{
 		          dt: dt
 	          } );
-		   }
-		   else{
+		      }
+		      else{
 			   showMessage({
-			 message: "Something went wrong. Please try again.",
-			 type: 'danger'
-		 });
+			    message: "Something went wrong. Please try again.",
+			    type: 'danger'
+		      });
+		     }   
 		   }
+           
 		   
 	   }).catch(error => {
 		   console.log(`Unknown error: ${error}`);			
